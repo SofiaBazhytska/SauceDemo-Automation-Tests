@@ -42,9 +42,7 @@
 
 ## Project Options Used
 * **Test Automation tool**: Selenium WebDriver
-* **Browsers**: 
-  1. Firefox 
-  2. Chrome 
+* **Browsers**: Firefox, Chrome 
 * **Locators**: CSS Selectors
 * **Test Runner**: NUnit
 * **Assertions**: Fluent Assertion
