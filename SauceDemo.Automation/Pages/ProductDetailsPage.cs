@@ -2,15 +2,13 @@
 
 namespace SauceDemo.Automation.Pages
 {
-    public class ProductDetailsPage : BasePage
+    public class ProductDetailsPage(IWebDriver driver) : BasePage(driver)
     {
-        public ProductDetailsPage(IWebDriver driver) : base(driver) { }
+        private static readonly By AddToCartButtonLocator = By.CssSelector("button[data-test^='add-to-cart']");
 
-        private By AddToCartButtonLocator => By.CssSelector("button[data-test^='add-to-cart']");
-
-        public void ClickAddToCart()
-        {
-            Click(AddToCartButtonLocator);
-        }
+        // <summary>
+        /// Clicks the 'Add to cart' button for the current product.
+        /// </summary>
+        public void ClickAddToCart() => Click(AddToCartButtonLocator);
     }
 }

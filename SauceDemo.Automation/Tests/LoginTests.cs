@@ -1,16 +1,13 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using SauceDemo.Automation.Pages;
 
 [assembly: Parallelizable(ParallelScope.Fixtures)]
 
 namespace SauceDemo.Automation.Tests
 {
-    [TestFixture("chrome")]
-    [TestFixture("firefox")]
+    [TestFixture]
     public class LoginTests : BaseTest
     {
-        public LoginTests(string browser) : base(browser) { }
-
         [Test]
         [TestCase("standard_user", "secret_sauce")]
         [Description("UC-1: Test Login form with only Username provided")]
@@ -21,7 +18,7 @@ namespace SauceDemo.Automation.Tests
             LoginPage.ClearPassword();
             LoginPage.ClickLogin();
 
-            LoginPage.GetErrorMessage().Should().Contain("Password is required");
+            LoginPage.GetErrorMessage().ShouldContain("Password is required");
         }
 
         [Test]
@@ -31,11 +28,11 @@ namespace SauceDemo.Automation.Tests
         {
             LoginPage.Login(user, pass);
 
-            InventoryPage.BurgerMenu.Displayed.Should().BeTrue();
-            InventoryPage.AppLogo.Text.Should().Be("Swag Labs");
-            InventoryPage.ShoppingCart.Displayed.Should().BeTrue();
-            InventoryPage.SortDropdown.Displayed.Should().BeTrue();
-            InventoryPage.InventoryList.Displayed.Should().BeTrue();
+            InventoryPage.BurgerMenu.Displayed.ShouldBeTrue();
+            InventoryPage.AppLogo.Text.ShouldBe("Swag Labs");
+            InventoryPage.ShoppingCart.Displayed.ShouldBeTrue();
+            InventoryPage.SortDropdown.Displayed.ShouldBeTrue();
+            InventoryPage.InventoryList.Displayed.ShouldBeTrue();
         }
     }
 }

@@ -1,26 +1,29 @@
-﻿using OpenQA.Selenium;
+﻿using NLog;
+using OpenQA.Selenium;
 using SauceDemo.Automation.Drivers;
 using SauceDemo.Automation.Pages;
 
 namespace SauceDemo.Automation.Tests
 {
-    public class BaseTest
+    public abstract class BaseTest
     {
-        protected IWebDriver Driver;
+        protected IWebDriver? Driver;
         protected LoginPage LoginPage;
         protected InventoryPage InventoryPage;
         protected ProductDetailsPage ProductDetailsPage;
-        private readonly string _browser;
-        public BaseTest(string browser)
-        {
-            _browser = browser;
-        }
+
+        protected static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
         [SetUp]
         public void Setup()
         {
-            Driver = BrowserFactory.GetDriver(_browser);
-            Driver.Navigate().GoToUrl("https://www.saucedemo.com");
+            var browser = TestContext.Parameters.Get("Browser", "chrome");
+            var url = TestContext.Parameters.Get("BaseUrl", "https://www.saucedemo.com");
+
+            Log.Info("------ STARTING TEST: {0} ------", TestContext.CurrentContext.Test.Name);
+
+            Driver = BrowserFactory.GetDriver(browser);
+            Driver.Navigate().GoToUrl(url);
 
             LoginPage = new LoginPage(Driver);
             InventoryPage = new InventoryPage(Driver);
@@ -28,9 +31,18 @@ namespace SauceDemo.Automation.Tests
         }
 
         [TearDown]
-        public void Teardown()
+        public void TearDown()
         {
-            BrowserFactory.QuitDriver();
+            Log.Info("TEST FINISHED: {0} | STATUS: {1}",
+                TestContext.CurrentContext.Test.Name,
+                TestContext.CurrentContext.Result.Outcome.Status);
+
+            if (Driver != null)
+            {
+                try { Driver.Quit(); }
+                catch (Exception ex) { Log.Error(ex, "Error during Quit"); }
+                finally { Driver.Dispose(); }
+            }
         }
     }
 }

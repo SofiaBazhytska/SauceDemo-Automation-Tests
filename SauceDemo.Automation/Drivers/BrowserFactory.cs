@@ -1,56 +1,46 @@
 ﻿using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium;
+using NLog;
 
 namespace SauceDemo.Automation.Drivers
 {
-    public class BrowserFactory
+    public static class BrowserFactory
     {
-        private static ThreadLocal<IWebDriver> _driver = new ThreadLocal<IWebDriver>();
+        private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
+        /// <summary>
+        /// Returns a configured WebDriver instance for the specified browser.
+        /// </summary>
         public static IWebDriver GetDriver(string browserType)
         {
-            if (_driver.Value == null)
+            Log.Info("Initializing WebDriver for browser: {0}", browserType);
+            IWebDriver instance = browserType.ToLower() switch
             {
-                IWebDriver instance = browserType.ToLower() switch
-                {
-                    "chrome" => CreateChromeDriver(),
-                    "firefox" => CreateFirefoxDriver(),
-                    _ => throw new ArgumentException($"Browser '{browserType}' is not supported")
-                };
+                "chrome" => CreateChromeDriver(),
+                "firefox" => CreateFirefoxDriver(),
+                _ => throw new ArgumentException($"Browser '{browserType}' is not supported")
+            };
 
-                instance.Manage().Window.Maximize();
-                _driver.Value = instance;
-            }
-            return _driver.Value;
+            instance.Manage().Window.Maximize();
+            return instance;
         }
 
-        private static IWebDriver CreateChromeDriver()
+        private static ChromeDriver CreateChromeDriver()
         {
             var options = new ChromeOptions();
-
             options.AddArgument("--start-maximized");
             options.AddArgument("--disable-search-engine-choice-screen");
-
             return new ChromeDriver(options);
         }
 
-        private static IWebDriver CreateFirefoxDriver()
+        private static FirefoxDriver CreateFirefoxDriver()
         {
-            var options = new FirefoxOptions();
-
-            options.PageLoadStrategy = PageLoadStrategy.Normal;
-
-            return new FirefoxDriver(options);
-        }
-
-        public static void QuitDriver()
-        {
-            if (_driver.Value != null)
+            var options = new FirefoxOptions
             {
-                _driver.Value.Quit();
-                _driver.Value = null;
-            }
+                PageLoadStrategy = PageLoadStrategy.Normal
+            };
+            return new FirefoxDriver(options);
         }
     }
 }

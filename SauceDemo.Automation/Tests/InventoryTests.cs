@@ -1,14 +1,11 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using SauceDemo.Automation.Pages;
 
 namespace SauceDemo.Automation.Tests
 {
-    [TestFixture("chrome")]
-    [TestFixture("firefox")]
+    [TestFixture]
     public class InventoryTests : BaseTest
     {
-        public InventoryTests(string browser) : base(browser) { }
-
         [Test]
         [TestCase("standard_user", "secret_sauce")]
         [Description("UC-3: Test adding products to shopping cart")]
@@ -18,7 +15,7 @@ namespace SauceDemo.Automation.Tests
             InventoryPage.ClickFirstProductTitle();
             ProductDetailsPage.ClickAddToCart();
 
-            InventoryPage.GetCartBadgeCount().Should().Be("1");
+            InventoryPage.GetCartBadgeCount().ShouldBe("1");
         }
     }
 }
